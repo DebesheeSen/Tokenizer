@@ -23,10 +23,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODELS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "models"))
+# Determine if running on Vercel
+IS_VERCEL = os.environ.get("VERCEL") == "1" or "VERCEL" in os.environ
+
+ORIGINAL_MODELS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "models"))
 DATASETS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "datasets"))
 
-os.makedirs(MODELS_DIR, exist_ok=True)
+if IS_VERCEL:
+    # On Vercel, the filesystem is read-only except for /tmp.
+    # We use /tmp/models for model read/writes.
+    MODELS_DIR = "/tmp/models"
+    os.makedirs(MODELS_DIR, exist_ok=True)
+    
+    # Copy pre-packaged models from original models folder to /tmp/models if they don't exist yet
+    if os.path.exists(ORIGINAL_MODELS_DIR):
+        for file_name in os.listdir(ORIGINAL_MODELS_DIR):
+            if file_name.endswith(".pkl"):
+                src = os.path.join(ORIGINAL_MODELS_DIR, file_name)
+                dst = os.path.join(MODELS_DIR, file_name)
+                if not os.path.exists(dst):
+                    try:
+                        import shutil
+                        shutil.copy2(src, dst)
+                    except Exception as e:
+                        print(f"Failed to copy {file_name} to /tmp/models: {e}")
+else:
+    MODELS_DIR = ORIGINAL_MODELS_DIR
+    os.makedirs(MODELS_DIR, exist_ok=True)
+
 os.makedirs(DATASETS_DIR, exist_ok=True)
 
 class TokenizerManager:
@@ -297,7 +321,7 @@ def run_training(dataset_name: str, vocab_size: int, model_name: str):
 
 @app.post("/api/train")
 def train_model(request: TrainRequest, background_tasks: BackgroundTasks):
-    """Trigger BPE Tokenizer training in a background task."""
+    """Trigger BPE Tokenizer training in a background task (or synchronously on Vercel)."""
     global training_status
     
     with training_lock:
@@ -312,14 +336,21 @@ def train_model(request: TrainRequest, background_tasks: BackgroundTasks):
             "error": ""
         }
         
-    background_tasks.add_task(
-        run_training, 
-        request.dataset, 
-        request.vocab_size, 
-        request.model_name
-    )
-    
-    return {"status": "started", "message": "Training started in background."}
+    if IS_VERCEL:
+        # Run synchronously for Vercel's serverless environment to prevent task freezing
+        run_training(request.dataset, request.vocab_size, request.model_name)
+        with training_lock:
+            if training_status["status"] == "error":
+                raise HTTPException(status_code=500, detail=training_status["message"])
+            return {"status": "completed", "message": f"Successfully trained model: {request.model_name}"}
+    else:
+        background_tasks.add_task(
+            run_training, 
+            request.dataset, 
+            request.vocab_size, 
+            request.model_name
+        )
+        return {"status": "started", "message": "Training started in background."}
 
 @app.get("/api/train/status")
 def get_train_status():

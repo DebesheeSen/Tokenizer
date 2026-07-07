@@ -9,13 +9,6 @@ from bpe_tokenizer import BPETokenizer
 GPT2PAT = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 GPT4PAT = r"""'(?i:[sdmt]|ll|ve|re)|[^\r\n\p{L}\p{N}]?+\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]++[\r\n]*|\s*[\r\n]|\s+(?!\S)|\s+"""
 
-
-# ---------------------------------------------------------------------------
-# Module-level helper functions.
-# These MUST live at module scope (not as methods or lambdas) so that
-# ProcessPoolExecutor workers can pickle and import them.
-# ---------------------------------------------------------------------------
-
 def get_pair_counts(ids):
     """Count adjacent-pair frequencies in a single chunk's id list."""
     counts = {}
