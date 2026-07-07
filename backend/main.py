@@ -116,6 +116,7 @@ class TrainRequest(BaseModel):
     model_name: str
 
 @app.get("/api/models")
+@app.get("/models")
 def list_models():
     """List all available tokenizer models."""
     try:
@@ -140,6 +141,7 @@ def list_models():
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/upload")
+@app.post("/upload")
 async def upload_model(file: UploadFile = File(...)):
     """Upload a new .pkl model file."""
     if not file.filename.endswith(".pkl"):
@@ -166,6 +168,7 @@ async def upload_model(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=f"Failed to parse pickle: {str(e)}")
 
 @app.post("/api/tokenize", response_model=TokenizeResponse)
+@app.post("/tokenize", response_model=TokenizeResponse)
 def tokenize_text(request: TokenizeRequest):
     """Tokenize the input text using a specified model."""
     if not request.text:
@@ -220,6 +223,7 @@ def tokenize_text(request: TokenizeRequest):
         raise HTTPException(status_code=500, detail=f"Tokenization error: {str(e)}")
 
 @app.get("/api/datasets")
+@app.get("/datasets")
 def list_datasets():
     """List available training dataset text files."""
     try:
@@ -320,6 +324,7 @@ def run_training(dataset_name: str, vocab_size: int, model_name: str):
             training_status["error"] = str(e)
 
 @app.post("/api/train")
+@app.post("/train")
 def train_model(request: TrainRequest, background_tasks: BackgroundTasks):
     """Trigger BPE Tokenizer training in a background task (or synchronously on Vercel)."""
     global training_status
@@ -353,12 +358,14 @@ def train_model(request: TrainRequest, background_tasks: BackgroundTasks):
         return {"status": "started", "message": "Training started in background."}
 
 @app.get("/api/train/status")
+@app.get("/train/status")
 def get_train_status():
     """Get the current training progress status."""
     with training_lock:
         return training_status
 
 @app.post("/api/train/reset")
+@app.post("/train/reset")
 def reset_train_status():
     """Reset training status to idle."""
     global training_status
