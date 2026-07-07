@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #f7f9fb;
+  --color-outline-variant: #c0c7cf;
+  --color-surface-container: #eceef0;
+  --color-error: #ba1a1a;
+  --color-primary: #1c648e;
+  --color-on-error-container: #93000a;
+  --color-outline: #71787f;
+  --color-inverse-primary: #90cdfd;
+  --color-surface-container-high: #e6e8ea;
+  --color-on-secondary: #ffffff;
+  --color-on-tertiary-container: #005115;
+  --color-on-background: #191c1e;
+  --color-surface-dim: #d8dadc;
+  --color-primary-fixed: #cae6ff;
+  --color-on-error: #ffffff;
+  --color-on-secondary-container: #626374;
+  --color-inverse-on-surface: #eff1f3;
+  --color-secondary-fixed-dim: #c5c5d8;
+  --color-tertiary: #006e20;
+  --color-tertiary-fixed: #93f993;
+  --color-inverse-surface: #2d3133;
+  --color-background: #f7f9fb;
+  --color-secondary-container: #e1e1f5;
+  --color-secondary-fixed: #e1e1f5;
+  --color-on-primary: #ffffff;
+  --color-tertiary-container: #64c868;
+  --color-on-primary-fixed: #001e30;
+  --color-surface-bright: #f7f9fb;
+  --color-primary-container: #7cb9e8;
+  --color-surface-tint: #1c648e;
+  --color-on-surface-variant: #41484e;
+  --color-error-container: #ffdad6;
+  --color-surface-container-highest: #e0e3e5;
+  --color-on-tertiary: #ffffff;
+  --color-on-primary-container: #00496d;
+  --color-on-secondary-fixed: #191b29;
+  --color-secondary: #5c5d6e;
+  --color-on-tertiary-fixed-variant: #005316;
+  --color-on-surface: #191c1e;
+  --color-tertiary-fixed-dim: #77dc7a;
+  --color-on-tertiary-fixed: #002105;
+  --color-surface-container-low: #f2f4f6;
+  --color-primary-fixed-dim: #90cdfd;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-variant: #e0e3e5;
+  --color-on-secondary-fixed-variant: #444655;
+  --color-on-primary-fixed-variant: #004b70;
+
+  --font-sans: 'Geist', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Font mappings from mockup design config */
+  --font-headline-md: 'Geist', sans-serif;
+  --font-display-lg: 'Geist', sans-serif;
+  --font-code-display: 'JetBrains Mono', monospace;
+  --font-body-main: 'Geist', sans-serif;
+  --font-label-caps: 'Geist', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: #f7f9fb;
+    font-family: 'Geist', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #191c1e;
+  }
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.03);
+}
+
+.token-chip {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.token-chip:hover {
+  transform: scale(1.05);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
