@@ -86,6 +86,21 @@ Follow these steps to set up and run the frontend and backend servers.
 
 ---
 
+### 3. Vercel Deployment
+
+This project is pre-configured for a zero-config deployment on Vercel:
+
+1. **Vercel Config**: At the root, `api/index.py` acts as the FastAPI entrypoint and `vercel.json` rewrites all requests matching `/api/*` to it.
+2. **Import Project**: Link your GitHub repository in the Vercel Dashboard.
+3. **Configure Project Settings**:
+   - **Framework Preset**: Other (or Vite)
+   - **Root Directory**: `.` (the project root, default)
+   - **Build Command**: `npm --prefix frontend install && npm --prefix frontend run build`
+   - **Output Directory**: `frontend/dist`
+4. Click **Deploy**. Vercel will build the frontend assets, set up the serverless Python functions for `/api`, and host them under the same domain.
+
+---
+
 ## 💡 How BPE Tokenization Works in this App
 
 1. **Pre-tokenization**: The input text is split into word-level chunks using regex (matching GPT-4 pattern).
