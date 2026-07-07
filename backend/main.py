@@ -3,12 +3,12 @@ import os
 import pickle
 import threading
 from typing import Dict, Any, List
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # Resolve backend imports
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from pre_tokenizer import PreTokenizer
 
@@ -262,6 +262,7 @@ def run_training(dataset_name: str, vocab_size: int, model_name: str):
             def train(self, text_data, target_vocab_size):
                 global training_status
                 self.vocab = {i: bytes([i]) for i in range(256)}
+                self.merges = {}
                 self.history = []
                 num_merges = target_vocab_size - 256
                 
@@ -305,6 +306,11 @@ def run_training(dataset_name: str, vocab_size: int, model_name: str):
         tokenizer = ProgressPreTokenizer()
         tokenizer.train(text, vocab_size)
 
+        # Check if the training was aborted during the train loop
+        with training_lock:
+            if training_status["status"] != "training":
+                return
+
         # Make sure target path has extension
         if not model_name.endswith(".pkl"):
             model_name += ".pkl"
@@ -329,6 +335,9 @@ def train_model(request: TrainRequest, background_tasks: BackgroundTasks):
     """Trigger BPE Tokenizer training in a background task (or synchronously on Vercel)."""
     global training_status
     
+    if request.vocab_size < 256:
+        raise HTTPException(status_code=400, detail="Vocabulary size must be at least 256.")
+        
     with training_lock:
         if training_status["status"] == "training":
             raise HTTPException(status_code=400, detail="A training process is already running.")
