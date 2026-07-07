@@ -86,14 +86,30 @@ Follow these steps to set up and run the frontend and backend servers.
 
 ---
 
-### 3. Vercel Deployment
+### 3. Deployment
 
-This project is pre-configured for a **zero-configuration** deployment on Vercel:
+You can choose to deploy this app in one of two configurations:
 
+#### Option A: Unified Deployment on Vercel (Recommended)
+This deploys both the frontend and backend to the same URL under a unified domain.
 1. **Import Project**: Link your GitHub repository in the Vercel Dashboard.
-2. **Framework Preset**: Vercel will automatically detect the root `package.json` and configure the build command (`npm run build`, which installs and builds the frontend React assets and moves them to the root `./dist` folder).
-3. **Serverless Functions**: Vercel will automatically detect `api/index.py` at the root as the FastAPI entrypoint and serve it.
-4. Click **Deploy**. Vercel will build the frontend assets, set up the serverless Python functions, and host them under the same domain.
+2. **Framework Preset**: Vercel will automatically detect the root `package.json` and configure the build command (`npm run build`, which builds the frontend React assets and moves them to `./dist`).
+3. **Configuration**: The root `vercel.json` maps incoming `/api/*` requests to the Python serverless function `api/index.py`.
+4. Click **Deploy**. Vercel will build and host both frontend assets and serverless Python functions under the same domain.
+
+#### Option B: Split Deployment (Netlify Frontend + Vercel Backend)
+If you prefer hosting the React frontend on **Netlify**, follow these steps:
+
+1. **Deploy Backend on Vercel**:
+   - Follow the steps in **Option A** to deploy to Vercel (or deploy the FastAPI app to another server provider like Render/Railway/Koyeb).
+   - Once deployed, copy your backend URL (e.g. `https://your-backend-api.vercel.app`).
+2. **Deploy Frontend on Netlify**:
+   - Create a new site from your GitHub repository in the Netlify Dashboard.
+   - Netlify will automatically detect the root `netlify.toml` file, setting the **Build Command** to `npm run build` and the **Publish Directory** to `dist`.
+   - In **Site configuration** -> **Environment variables**, add a new variable:
+     - Key: `VITE_API_URL`
+     - Value: `https://your-backend-api.vercel.app` (your copied backend URL)
+   - Click **Deploy**. Netlify will build the frontend and link it to your remote backend.
 
 ---
 

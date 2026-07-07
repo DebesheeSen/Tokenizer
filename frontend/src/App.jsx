@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 function App() {
   const [activeTab, setActiveTab] = useState('workspace')
   
@@ -44,7 +46,7 @@ function App() {
   const fetchModels = async (selectModelName = null) => {
     setIsModelsLoading(true)
     try {
-      const res = await fetch('/api/models')
+      const res = await fetch(`${API_BASE}/api/models`)
       if (res.ok) {
         const data = await res.json()
         setModels(data)
@@ -69,7 +71,7 @@ function App() {
   // Fetch datasets list
   const fetchDatasets = async () => {
     try {
-      const res = await fetch('/api/datasets')
+      const res = await fetch(`${API_BASE}/api/datasets`)
       if (res.ok) {
         const data = await res.json()
         setDatasets(data)
@@ -88,7 +90,7 @@ function App() {
     setIsTokenizing(true)
     setTokenizeError('')
     try {
-      const res = await fetch('/api/tokenize', {
+      const res = await fetch(`${API_BASE}/api/tokenize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: textToTokenize, model: modelName })
@@ -128,7 +130,7 @@ function App() {
     formData.append('file', file)
 
     try {
-      const res = await fetch('/api/upload', {
+      const res = await fetch(`${API_BASE}/api/upload`, {
         method: 'POST',
         body: formData
       })
@@ -161,7 +163,7 @@ function App() {
     })
 
     try {
-      const res = await fetch('/api/train', {
+      const res = await fetch(`${API_BASE}/api/train`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -201,7 +203,7 @@ function App() {
 
     trainIntervalRef.current = setInterval(async () => {
       try {
-        const res = await fetch('/api/train/status')
+        const res = await fetch(`${API_BASE}/api/train/status`)
         if (res.ok) {
           const status = await res.json()
           setTrainingState(status)
@@ -215,7 +217,7 @@ function App() {
             setTimeout(() => {
               setActiveTab('workspace')
               // Reset status
-              fetch('/api/train/reset', { method: 'POST' })
+              fetch(`${API_BASE}/api/train/reset`, { method: 'POST' })
             }, 1500)
           } else if (status.status === 'error') {
             clearInterval(trainIntervalRef.current)
