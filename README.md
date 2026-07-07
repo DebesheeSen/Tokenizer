@@ -88,16 +88,12 @@ Follow these steps to set up and run the frontend and backend servers.
 
 ### 3. Vercel Deployment
 
-This project is pre-configured for a zero-config deployment on Vercel:
+This project is pre-configured for a **zero-configuration** deployment on Vercel:
 
-1. **Vercel Config**: At the root, `api/index.py` acts as the FastAPI entrypoint and `vercel.json` rewrites all requests matching `/api/*` to it.
-2. **Import Project**: Link your GitHub repository in the Vercel Dashboard.
-3. **Configure Project Settings**:
-   - **Framework Preset**: Other (or Vite)
-   - **Root Directory**: `.` (the project root, default)
-   - **Build Command**: `npm --prefix frontend install && npm --prefix frontend run build`
-   - **Output Directory**: `frontend/dist`
-4. Click **Deploy**. Vercel will build the frontend assets, set up the serverless Python functions for `/api`, and host them under the same domain.
+1. **Import Project**: Link your GitHub repository in the Vercel Dashboard.
+2. **Framework Preset**: Vercel will automatically detect the root `package.json` and configure the build command (`npm run build`, which installs and builds the frontend React assets and moves them to the root `./dist` folder).
+3. **Serverless Functions**: Vercel will automatically detect `api/index.py` at the root as the FastAPI entrypoint and serve it.
+4. Click **Deploy**. Vercel will build the frontend assets, set up the serverless Python functions, and host them under the same domain.
 
 ---
 
