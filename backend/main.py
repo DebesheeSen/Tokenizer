@@ -115,6 +115,10 @@ class TrainRequest(BaseModel):
     vocab_size: int
     model_name: str
 
+@app.get("/")
+def root():
+    return {"message": "Backend is running"}
+    
 @app.get("/api/models")
 @app.get("/models")
 def list_models():
